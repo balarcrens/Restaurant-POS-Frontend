@@ -18,14 +18,16 @@ const SuperAdminDashboard = () => {
     const [branches, setBranches] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     const getSuperAdminData = async () => {
         try {
             setIsLoading(true);
             const [statsRes, branchesRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/dashboard/superadmin', {
+                axios.get(`${DB_URL}/api/dashboard/superadmin`, {
                     headers: { "authorization": token }
                 }),
-                axios.get('http://localhost:5000/api/branches', {
+                axios.get(`${DB_URL}/api/branches`, {
                     headers: { "authorization": token }
                 })
             ]);
@@ -121,7 +123,7 @@ const SuperAdminDashboard = () => {
                                     <tr key={i} className="animate-pulse">
                                         <td colSpan="4" className="px-6 py-4">
                                             <div className="h-4 bg-slate-100 rounded w-full"></div>
-                                        </td>       
+                                        </td>
                                     </tr>
                                 ))
                             ) : branches.length > 0 ? (

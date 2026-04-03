@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import {
     Plus,
@@ -13,7 +13,6 @@ import {
     MapPin,
     Search,
     Calendar,
-    ChevronRight,
     SearchX,
     RefreshCcw
 } from 'lucide-react';
@@ -36,6 +35,7 @@ export default function Admin() {
         role: 'admin',
         branchid: ''
     });
+    const DB_URL = import.meta.env.VITE_DB_URL;
 
     useEffect(() => {
         fetchAdmins();
@@ -45,7 +45,7 @@ export default function Admin() {
     const fetchAdmins = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get('http://localhost:5000/api/users/all', {
+            const res = await axios.get(`${DB_URL}/api/users/all`, {
                 headers: { "authorization": token }
             });
             setAdmins(res.data);
@@ -59,7 +59,7 @@ export default function Admin() {
 
     const fetchBranches = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/branches', {
+            const res = await axios.get(`${DB_URL}/api/branches`, {
                 headers: { "authorization": token }
             });
             setBranches(res.data);
@@ -76,13 +76,13 @@ export default function Admin() {
                 const updateData = { ...formData };
                 if (!updateData.password) delete updateData.password;
 
-                await axios.put(`http://localhost:5000/api/users/${editingAdmin.id}`, updateData, {
+                await axios.put(`${DB_URL}/api/users/${editingAdmin.id}`, updateData, {
                     headers: { "authorization": token }
                 });
 
                 toast.success('Admin updated successfully');
             } else {
-                await axios.post('http://localhost:5000/api/users/register', formData, {
+                await axios.post(`${DB_URL}/api/users/register`, formData, {
                     headers: { "authorization": token }
                 });
 
@@ -115,7 +115,7 @@ export default function Admin() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5000/api/users/${id}`, {
+                await axios.delete(`${DB_URL}/api/users/${id}`, {
                     headers: { "authorization": token }
                 });
                 fetchAdmins();

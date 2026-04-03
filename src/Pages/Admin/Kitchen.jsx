@@ -14,6 +14,8 @@ export default function Kitchen() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (user?.branch_id) {
             fetchOrders();
@@ -25,7 +27,7 @@ export default function Kitchen() {
     const fetchOrders = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/orders/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/orders/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
 
@@ -45,7 +47,7 @@ export default function Kitchen() {
 
     const updateStatus = async (id, newStatus) => {
         try {
-            await axios.put(`http://localhost:5000/api/orders/${id}/status`, { status: newStatus }, {
+            await axios.put(`${DB_URL}/api/orders/${id}/status`, { status: newStatus }, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             fetchOrders();
@@ -70,7 +72,7 @@ export default function Kitchen() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5000/api/orders/${id}`, {
+                await axios.delete(`${DB_URL}/api/orders/${id}`, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
                 fetchOrders();

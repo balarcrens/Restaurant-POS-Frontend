@@ -22,6 +22,8 @@ export default function SqlEditor() {
     const [stats, setStats] = useState(null);
     const textAreaRef = useRef(null);
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     const handleRunQuery = async () => {
         if (!query.trim()) return;
         try {
@@ -30,7 +32,7 @@ export default function SqlEditor() {
             setResults(null);
             const startTime = performance.now();
 
-            const res = await axios.post('http://localhost:5000/api/sql/query', { query }, {
+            const res = await axios.post(`${DB_URL}/api/sql/query`, { query }, {
                 headers: { "authorization": token }
             });
 

@@ -19,6 +19,8 @@ export default function Ingredients() {
     });
     const [isLoading, setIsLoading] = useState(false);
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (user?.branch_id) {
             fetchIngredients();
@@ -28,7 +30,7 @@ export default function Ingredients() {
     const fetchIngredients = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/ingredients/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/ingredients/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setIsLoading(false);
@@ -47,13 +49,13 @@ export default function Ingredients() {
         const payload = { ...formData, branch_id: user.branch_id };
         try {
             if (editingIngredient) {
-                await axios.put(`http://localhost:5000/api/ingredients/${editingIngredient.id}`, payload, {
+                await axios.put(`${DB_URL}/api/ingredients/${editingIngredient.id}`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 
                 toast.success('Ingredient updated successfully');
             } else {
-                await axios.post('http://localhost:5000/api/ingredients/create', payload, {
+                await axios.post(`${DB_URL}/api/ingredients/create`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 

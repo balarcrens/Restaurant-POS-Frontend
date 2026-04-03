@@ -19,6 +19,8 @@ export default function TableManagement() {
         status: 'free'
     });
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (user?.branch_id) {
             fetchTables();
@@ -28,7 +30,7 @@ export default function TableManagement() {
     const fetchTables = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/tables/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/tables/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setIsLoading(false);
@@ -44,13 +46,13 @@ export default function TableManagement() {
         const payload = { ...formData, branch_id: user.branch_id };
         try {
             if (editingTable) {
-                await axios.put(`http://localhost:5000/api/tables/${editingTable.id}`, payload, {
+                await axios.put(`${DB_URL}/api/tables/${editingTable.id}`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 
                 toast.success('Table updated successfully');
             } else {
-                await axios.post('http://localhost:5000/api/tables/add', payload, {
+                await axios.post(`${DB_URL}/api/tables/add`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 
@@ -66,7 +68,7 @@ export default function TableManagement() {
 
     const updateStatus = async (id, status) => {
         try {
-            await axios.put(`http://localhost:5000/api/tables/${id}/status`, { status }, {
+            await axios.put(`${DB_URL}/api/tables/${id}/status`, { status }, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             fetchTables();
@@ -112,7 +114,7 @@ export default function TableManagement() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5000/api/tables/${id}`, {
+                await axios.delete(`${DB_URL}/api/tables/${id}`, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
                 fetchTables();

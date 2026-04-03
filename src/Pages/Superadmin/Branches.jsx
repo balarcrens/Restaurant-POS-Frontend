@@ -42,6 +42,8 @@ export default function Branches() {
         phone: ''
     });
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (location.state?.showTooltip) {
             setShowTooltip(true);
@@ -57,7 +59,7 @@ export default function Branches() {
     const fetchBranches = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get('http://localhost:5000/api/branches', {
+            const res = await axios.get(`${DB_URL}/api/branches`, {
                 headers: { "authorization": token }
             });
             setBranches(res.data);
@@ -71,7 +73,7 @@ export default function Branches() {
     const fetchBranchDetail = async (branchId) => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/branches/${branchId}/revenue`, {
+            const res = await axios.get(`${DB_URL}/api/branches/${branchId}/revenue`, {
                 headers: { "authorization": token }
             });
             setBranchesDetail(res.data);
@@ -85,7 +87,7 @@ export default function Branches() {
     const fetchBranchMonthlyStats = async (branchId) => {
         try {
             setIsStatsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/dashboard/revenue/${branchId}`, {
+            const res = await axios.get(`${DB_URL}/api/dashboard/revenue/${branchId}`, {
                 headers: { authorization: token }
             });
             setBranchMonthlyStats(res.data);
@@ -100,13 +102,13 @@ export default function Branches() {
         e.preventDefault();
         try {
             if (editingBranch) {
-                await axios.put(`http://localhost:5000/api/branches/${editingBranch.id}`, formData, {
+                await axios.put(`${DB_URL}/api/branches/${editingBranch.id}`, formData, {
                     headers: { "authorization": token }
                 });
 
                 toast.success('Branch updated successfully');
             } else {
-                await axios.post('http://localhost:5000/api/branches', formData, {
+                await axios.post(`${DB_URL}/api/branches`, formData, {
                     headers: { "authorization": token }
                 });
 
@@ -134,7 +136,7 @@ export default function Branches() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5000/api/branches/${id}`, {
+                await axios.delete(`${DB_URL}/api/branches/${id}`, {
                     headers: { "authorization": token }
                 });
                 fetchBranches();
@@ -160,7 +162,7 @@ export default function Branches() {
 
         if (result.isConfirmed) {
             try {
-                await axios.post(`http://localhost:5000/api/branches/${branchId}/reset`, {}, {
+                await axios.post(`${DB_URL}/api/branches/${branchId}/reset`, {}, {
                     headers: { "authorization": token }
                 });
 

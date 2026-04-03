@@ -12,13 +12,15 @@ export default function Login() {
     const [isPassShow, setisPassShow] = useState(false);
     const { login } = useContext(AuthContext);
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     const handleShowPass = () => {
         setisPassShow((prev) => !prev)
     }
 
     const onSubmit = async (data) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/users/login', data);
+            const res = await axios.post(`${DB_URL}/api/users/login`, data);
 
             login(res.data.user, res.data.token);
             toast.success('Login successful');

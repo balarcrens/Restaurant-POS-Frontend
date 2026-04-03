@@ -27,6 +27,8 @@ const AdminDashboard = () => {
     const [revenueStats, setRevenueStats] = useState([]);
     const [revLoading, setRevLoading] = useState(false);
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (user?.branch_id) {
             fetchDashboardData();
@@ -41,10 +43,10 @@ const AdminDashboard = () => {
         try {
             setIsLoading(true);
             const [statsRes, itemsRes] = await Promise.all([
-                axios.get(`http://localhost:5000/api/dashboard/${user.branch_id}`, {
+                axios.get(`${DB_URL}/api/dashboard/${user.branch_id}`, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 }),
-                axios.get(`http://localhost:5000/api/items/branch/${user.branch_id}`, {
+                axios.get(`${DB_URL}/api/items/branch/${user.branch_id}`, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 })
             ]);
@@ -62,7 +64,7 @@ const AdminDashboard = () => {
     const fetchRevenueStats = async () => {
         try {
             setRevLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/dashboard/revenue/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/dashboard/revenue/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setRevenueStats(res.data);

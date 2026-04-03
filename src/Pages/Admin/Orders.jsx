@@ -21,6 +21,8 @@ export default function Orders() {
         items: []
     });
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (user?.branch_id) {
             fetchOrders();
@@ -33,7 +35,7 @@ export default function Orders() {
     const fetchOrders = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/orders/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/orders/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setIsLoading(false);
@@ -46,7 +48,7 @@ export default function Orders() {
 
     const fetchItems = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/items/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/items/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setItems(res.data);
@@ -57,7 +59,7 @@ export default function Orders() {
 
     const fetchIngredients = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/ingredients/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/ingredients/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setAllIngredients(res.data);
@@ -68,7 +70,7 @@ export default function Orders() {
 
     const fetchTables = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/tables/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/tables/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setTables(res.data);
@@ -124,11 +126,11 @@ export default function Orders() {
         };
 
         try {
-            await axios.post('http://localhost:5000/api/orders/create', payload, {
+            await axios.post(`${DB_URL}/api/orders/create`, payload, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
 
-            await axios.put(`http://localhost:5000/api/tables/${newOrder.table_id}/status`, { status: 'occupied' }, {
+            await axios.put(`${DB_URL}/api/tables/${newOrder.table_id}/status`, { status: 'occupied' }, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
 

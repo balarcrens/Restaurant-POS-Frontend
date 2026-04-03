@@ -27,6 +27,8 @@ export default function MenuItems() {
         isavailable: true
     });
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (user?.branch_id) {
             fetchItems();
@@ -38,7 +40,7 @@ export default function MenuItems() {
     const fetchItems = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/items/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/items/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setIsLoading(false);
@@ -51,7 +53,7 @@ export default function MenuItems() {
 
     const fetchCategories = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/categories/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/categories/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setCategories(res.data);
@@ -62,7 +64,7 @@ export default function MenuItems() {
 
     const fetchIngredients = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/ingredients/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/ingredients/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setAllIngredients(res.data);
@@ -85,13 +87,13 @@ export default function MenuItems() {
         const payload = { ...formData, branch_id: user.branch_id };
         try {
             if (editingItem) {
-                await axios.put(`http://localhost:5000/api/items/${editingItem.id}`, payload, {
+                await axios.put(`${DB_URL}/api/items/${editingItem.id}`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 
                 toast.success('Item updated successfully');
             } else {
-                await axios.post('http://localhost:5000/api/items/create', payload, {
+                await axios.post(`${DB_URL}/api/items/create`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 
@@ -145,7 +147,7 @@ export default function MenuItems() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5000/api/items/${id}`, {
+                await axios.delete(`${DB_URL}/api/items/${id}`, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 

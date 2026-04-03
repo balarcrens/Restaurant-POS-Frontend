@@ -18,6 +18,8 @@ export default function Category() {
         branch_id: '',
     });
 
+    const DB_URL = import.meta.env.VITE_DB_URL;
+
     useEffect(() => {
         if (user?.branch_id) {
             fetchCategories();
@@ -27,7 +29,7 @@ export default function Category() {
     const fetchCategories = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/categories/branch/${user.branch_id}`, {
+            const res = await axios.get(`${DB_URL}/api/categories/branch/${user.branch_id}`, {
                 headers: { authorization: localStorage.getItem('authorization') }
             });
             setIsLoading(false);
@@ -47,13 +49,13 @@ export default function Category() {
 
         try {
             if (editingCategory) {
-                await axios.put(`http://localhost:5000/api/categories/${editingCategory.id}`, payload, {
+                await axios.put(`${DB_URL}/api/categories/${editingCategory.id}`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 
                 toast.success('Category updated successfully');
             } else {
-                await axios.post('http://localhost:5000/api/categories/create', payload, {
+                await axios.post(`${DB_URL}/api/categories/create`, payload, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
 
@@ -102,7 +104,7 @@ export default function Category() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5000/api/categories/${id}`, {
+                await axios.delete(`${DB_URL}/api/categories/${id}`, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
                 fetchCategories();
