@@ -104,7 +104,7 @@ export default function Ingredients() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5000/api/ingredients/${id}`, {
+                await axios.delete(`${DB_URL}/api/ingredients/${id}`, {
                     headers: { authorization: localStorage.getItem('authorization') }
                 });
                 fetchIngredients();

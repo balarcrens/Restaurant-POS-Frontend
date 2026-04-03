@@ -13,12 +13,14 @@ export default function Kitchen() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [allIngredients, setAllIngredients] = useState([]);
 
     const DB_URL = import.meta.env.VITE_DB_URL;
 
     useEffect(() => {
         if (user?.branch_id) {
             fetchOrders();
+            fetchIngredients();
             const interval = setInterval(fetchOrders, 30000);
             return () => clearInterval(interval);
         }
@@ -36,6 +38,17 @@ export default function Kitchen() {
             setOrders(activeOrders);
         } catch (err) {
             setIsLoading(false);
+            console.error(err.message);
+        }
+    };
+
+    const fetchIngredients = async () => {
+        try {
+            const res = await axios.get(`${DB_URL}/api/ingredients/branch/${user.branch_id}`, {
+                headers: { authorization: localStorage.getItem('authorization') }
+            });
+            setAllIngredients(res.data);
+        } catch (err) {
             console.error(err.message);
         }
     };
@@ -108,6 +121,15 @@ export default function Kitchen() {
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedOrder(null);
+    };
+
+    const getIngredientNames = (ids = []) => {
+        return ids
+            .map(id => {
+                const ing = allIngredients.find(i => i.id === id);
+                return ing ? ing.name : null;
+            })
+            .filter(Boolean);
     };
 
     return (
@@ -303,27 +325,38 @@ export default function Kitchen() {
 
                         <div className="space-y-4 mb-8">
                             <p className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2">Order Items</p>
-                            {selectedOrder.items?.map((item, idx) => (
-                                <div key={idx} className="flex flex-col gap-2 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex items-center gap-3">
-                                            <span className="bg-amber-100 text-amber-600 w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm">
-                                                {item.quantity}x
-                                            </span>
-                                            <p className="font-bold text-slate-800 text-lg">{item.item_name}</p>
-                                        </div>
-                                    </div>
-                                    {item.ingredient_names && item.ingredient_names.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {item.ingredient_names.map((ing, i) => (
-                                                <span key={i} className="text-[10px] font-black uppercase tracking-wider bg-slate-50 border border-slate-100 text-slate-500 px-2.5 py-1 rounded-md">
-                                                    + {ing}
+                            {selectedOrder.items?.map((item, idx) => {
+                                const ingredientNames = getIngredientNames(item.selected_ingredients);
+
+                                return (
+                                    <div key={idx} className="flex flex-col gap-2 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
+
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center gap-3">
+                                                <span className="bg-amber-100 text-amber-600 w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm">
+                                                    {item.quantity}x
                                                 </span>
-                                            ))}
+                                                <p className="font-bold text-slate-800 text-lg">
+                                                    {item.item_name}
+                                                </p>
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+
+                                        {ingredientNames.length > 0 && (
+                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                {ingredientNames.map((ing, i) => (
+                                                    <span
+                                                        key={i}
+                                                        className="text-[10px] font-black uppercase tracking-wider bg-slate-50 border border-slate-100 text-slate-500 px-2.5 py-1 rounded-md"
+                                                    >
+                                                        + {ing}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         <div className="flex gap-3 mt-4">

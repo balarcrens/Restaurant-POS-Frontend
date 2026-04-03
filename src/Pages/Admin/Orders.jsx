@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Plus, ShoppingCart, Table as TableIcon, IndianRupee, X, ChefHat, Trash2, Search, ArrowRight, RefreshCcw } from 'lucide-react';
+import { Plus, ShoppingCart, Table as TableIcon, IndianRupee, X, ChefHat, Trash2, Search, ArrowRight, RefreshCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import AuthContext from '../../Context/Auth/AuthContext';
 import { toast } from 'react-toastify';
 
@@ -14,6 +14,7 @@ export default function Orders() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isTableOpen, setIsTableOpen] = useState(false);
 
     const [newOrder, setNewOrder] = useState({
         table_id: '',
@@ -209,7 +210,7 @@ export default function Orders() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6">
                 {filteredOrders.length === 0 ? (
                     <div className="bg-white rounded-[2rem] p-12 text-center border-2 border-dashed border-slate-200">
                         <p className="text-slate-400 font-semibold italic">No active orders found.</p>
@@ -257,7 +258,7 @@ export default function Orders() {
                                         })}
                                     </div>
                                 </div>
-                                <div className="text-right text-amber-600 font-bold text-xl">
+                                <div className="flex items-center text-right text-amber-600 font-bold text-xl">
                                     <IndianRupee size={16} className="inline mr-1" />{order.total_price}
                                 </div>
                             </div>
@@ -271,10 +272,21 @@ export default function Orders() {
 
             {isCreateModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-white w-full max-w-6xl h-[90vh] rounded-[3rem] shadow-2xl relative flex flex-wrap-reverse lg:overflow-hidden overflow-y-auto scrollbar-hidden animate-in zoom-in-95 duration-300">
-                        <div className="sm:w-[40%] w-full border-r border-slate-100 flex flex-col flex-grow">
-                            <div className="p-8 pb-0 border-b border-slate-100">
-                                <h3 className="text-2xl font-bold text-slate-900 mb-6">Select <span className="text-amber-600">Items</span></h3>
+                    <div className="bg-white w-full max-w-6xl h-[90vh] rounded-2xl shadow-2xl relative flex flex-col md:flex-row overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh]">
+                        <div className="md:w-[40%] w-full border-r border-slate-100 flex flex-col min-h-0">
+                            <div className="p-4 md:p-8 pb-0 border-b border-slate-100">
+                                <div className='flex flex-wrap md:justify-center justify-between gap-2 items-center'>
+                                    <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                                        Select <span className="text-amber-600">Items</span>
+                                    </h3>
+                                    <button
+                                        onClick={() => setIsCreateModalOpen(false)}
+                                        className="p-2 text-slate-400 md:hidden block hover:cursor-pointer hover:text-red-500"
+                                    >
+                                        <X size={28} />
+                                    </button>
+                                </div>
+
                                 <div className="relative">
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                     <input
@@ -286,7 +298,8 @@ export default function Orders() {
                                     />
                                 </div>
                             </div>
-                            <div className="flex-grow overflow-y-auto scrollbar-hidden p-8 pt-2 space-y-4 custom-scrollbar">
+
+                            <div className="flex-1 overflow-y-auto scrollbar-hidden p-3 md:p-6 space-y-3 md:space-y-6 min-h-0">
                                 {filteredItems.map(item => (
                                     <button
                                         key={item.id}
@@ -294,30 +307,46 @@ export default function Orders() {
                                         className={`w-full text-left bg-white p-5 rounded-2xl border border-slate-100 hover:border-amber-200 hover:bg-amber-50/50 transition-all flex justify-between items-center group shadow-sm hover:shadow-md ${item.isavailable ? 'hover:cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                                     >
                                         <div>
-                                            <div className="font-bold text-slate-900 group-hover:text-amber-600 mb-1">{item.name}</div>
+                                            <div className="font-bold text-slate-900 group-hover:text-amber-600 mb-1">
+                                                {item.name}
+                                            </div>
                                             <div className="text-xs font-bold text-amber-600 flex items-center gap-1">
                                                 <IndianRupee size={12} /> {item.price}
                                             </div>
                                         </div>
-                                        {item.isavailable ?
-                                            <Plus size={20} className="text-slate-300 group-hover:text-amber-600" /> : <span className="text-xs font-bold uppercase text-rose-500">Unavailable</span>}
+
+                                        {item.isavailable ? (
+                                            <Plus size={20} className="text-slate-300 group-hover:text-amber-600" />
+                                        ) : (
+                                            <span className="text-xs font-bold uppercase text-rose-500">
+                                                Unavailable
+                                            </span>
+                                        )}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="flex-grow flex flex-col bg-[#fcfaf7]/50 sm:max-h-207">
-                            <div className="p-8 sm:pb-8 pb-2 border-b border-slate-100 flex justify-between items-center bg-white">
+                        <div className="flex-1 flex flex-col md:border-0 border-t-2 border-amber-400 bg-[#fcfaf7]/50 md:max-h-[100%] max-h-[55%] md:min-w-[60%]">
+                            <div className="py-2 px-6 md:p-8 border-b border-slate-100 flex justify-between items-center bg-white">
                                 <div>
-                                    <h3 className="text-2xl font-bold text-slate-900">Custom <span className="text-amber-600">Order</span></h3>
-                                    <p className="text-slate-500 text-sm">Customize items and confirm details.</p>
+                                    <h3 className="text-2xl font-bold text-slate-900">
+                                        Custom <span className="text-amber-600">Order</span>
+                                    </h3>
+                                    <p className="text-slate-500 text-sm">
+                                        Customize items and confirm details.
+                                    </p>
                                 </div>
-                                <button onClick={() => setIsCreateModalOpen(false)} className="p-2 text-slate-400 hover:cursor-pointer hover:text-red-500">
+
+                                <button
+                                    onClick={() => setIsCreateModalOpen(false)}
+                                    className="p-2 text-slate-400 md:block hidden hover:cursor-pointer hover:text-red-500"
+                                >
                                     <X size={28} />
                                 </button>
                             </div>
 
-                            <div className="flex-grow overflow-y-auto p-8 sm:pt-8 pt-2 sm:space-y-6 space-y-2 scrollbar-hidden">
+                            <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 md:p-8 space-y-3 md:space-y-6 min-h-0">
                                 {newOrder.items.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
                                         <ShoppingCart size={64} className="opacity-20" />
@@ -325,33 +354,42 @@ export default function Orders() {
                                     </div>
                                 ) : (
                                     newOrder.items.map((cartItem, idx) => (
-                                        <div key={idx} className="bg-white p-6 rounded-[2rem] shadow-lg border border-slate-100 animate-in slide-in-from-right-4">
-                                            <div className="flex justify-between items-start mb-4">
+                                        <div key={idx} className="bg-white p-3 md:p-6 rounded-2xl shadow-lg border border-slate-100">
+                                            <div className={`flex justify-between items-start`}>
                                                 <div>
-                                                    <h4 className="text-xl font-bold text-slate-900">{cartItem.name}</h4>
+                                                    <h4 className="text-xl font-bold text-slate-900">
+                                                        {cartItem.name}
+                                                    </h4>
                                                     <div className="text-amber-600 font-bold flex items-center gap-1">
                                                         <IndianRupee size={16} /> {cartItem.price}
                                                     </div>
                                                 </div>
-                                                <button onClick={() => removeItem(idx)} className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg">
+
+                                                <button
+                                                    onClick={() => removeItem(idx)}
+                                                    className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg"
+                                                >
                                                     <Trash2 size={20} />
                                                 </button>
                                             </div>
 
-                                            <div className="text-xs mt-4 font-black uppercase text-slate-400 tracking-widest mb-3 flex items-center gap-2">
+                                            {(cartItem.available_ingredients.length !== 0) && <div className="text-xs mt-4 font-black uppercase text-slate-400 tracking-widest mb-3 flex items-center gap-2">
                                                 <ChefHat size={14} /> Customize Ingredients
-                                            </div>
-                                            <div className="overflow-y-auto scrollbar-hidden max-w-[500px]">
-                                                <div className="flex gap-2 max-h-fit">
+                                            </div>}
+                                            {(cartItem.available_ingredients.length !== 0) &&
+                                                <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-2 max-w-full">
                                                     {cartItem.available_ingredients.map((ingId) => {
-                                                        const ing = allIngredients.filter(i => i.isavailable === true).find(i => i.id === ingId);
+                                                        const ing = allIngredients
+                                                            .filter(i => i.isavailable === true)
+                                                            .find(i => i.id === ingId);
+
                                                         if (!ing) return null;
 
                                                         return (
                                                             <button
                                                                 key={ingId}
                                                                 onClick={() => toggleIngredient(idx, ingId)}
-                                                                className={`px-4 py-2 rounded-xl min-w-fit hover:cursor-pointer text-xs font-bold border-2 transition-all flex items-center gap-2 ${cartItem.selected_ingredients.includes(ingId)
+                                                                className={`px-4 py-2 min-w-fit rounded-xl text-xs font-bold border-2 transition-all flex items-center gap-2 ${cartItem.selected_ingredients.includes(ingId)
                                                                     ? 'bg-amber-600 border-amber-600 text-white'
                                                                     : 'bg-white border-slate-100 text-slate-500 hover:border-amber-200'
                                                                     }`}
@@ -361,39 +399,64 @@ export default function Orders() {
                                                         );
                                                     })}
                                                 </div>
-                                            </div>
+                                            }
                                         </div>
                                     ))
                                 )}
                             </div>
 
-                            <div className="p-8 bg-white border-t border-slate-100">
-                                <div className="grid grid-cols-2 gap-8 mb-8">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Assign Table</label>
-                                        <select
-                                            value={newOrder.table_id}
-                                            onChange={(e) => setNewOrder({ ...newOrder, table_id: e.target.value })}
-                                            className="w-full bg-slate-50 hover:cursor-pointer py-4 sm:px-6 px-2 rounded-2xl border-2 border-slate-50 focus:border-amber-500 outline-none font-bold"
+                            <div className="p-3 md:p-8 bg-white border-t border-slate-100 sticky bottom-0 z-10">
+                                <div className="grid grid-cols-2 gap-2 md:gap-6 mb-3 md:mb-6">
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setIsTableOpen(!isTableOpen)}
+                                            className="w-full bg-slate-50 py-3 px-4 rounded-xl border-2 transition-all duration-300 border-gray-200 text-left font-bold"
                                         >
-                                            <option value="">Select Table</option>
-                                            {tables.filter(table => table.status === 'free').map(table => {
-                                                return (
-                                                    <option key={table.id} value={table.id}>Table {table.table_number}</option>
-                                                )
-                                            })}
-                                        </select>
+                                            {newOrder.table_id
+                                                ? `Table ${tables.find(t => t.id == newOrder.table_id)?.table_number}`
+                                                : "Select Table"}
+
+
+                                            {!isTableOpen ?
+                                                <ChevronDown className='absolute top-4 right-3.5' /> : <ChevronUp className='absolute top-3.5 right-3.5' />}
+                                        </button>
+
+
+                                        {isTableOpen && (
+                                            <div className="absolute z-50 mt-1 w-full bg-white rounded-xl border-2 border-gray-200 shadow-lg max-h-21 overflow-y-auto scrollbar-hidden">
+                                                {tables
+                                                    .filter(table => table.status === 'free')
+                                                    .map(table => (
+                                                        <div
+                                                            key={table.id}
+                                                            onClick={() => {
+                                                                setNewOrder({ ...newOrder, table_id: table.id });
+                                                                setIsTableOpen(false);
+                                                            }}
+                                                            className="px-4 py-2 hover:bg-amber-100 cursor-pointer"
+                                                        >
+                                                            Table {table.table_number}
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="text-right flex flex-col items-end justify-center gap-2">
-                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total Amount</div>
-                                        <div className="text-4xl font-black text-slate-900 flex items-center justify-end gap-2">
-                                            <IndianRupee size={32} className="text-amber-600" /> {calculateTotal()}
+
+                                    <div className="text-right flex flex-col justify-center">
+                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+                                            Total Amount
+                                        </div>
+
+                                        <div className="text-3xl sm:text-4xl font-black text-slate-900 flex items-center justify-end gap-2">
+                                            <IndianRupee size={28} className="text-amber-600" />
+                                            {calculateTotal()}
                                         </div>
                                     </div>
                                 </div>
+
                                 <button
                                     onClick={handleCreateOrder}
-                                    className="w-full bg-slate-900 hover:cursor-pointer text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl active:scale-[0.98]"
+                                    className="w-full bg-slate-900 hover:cursor-pointer text-white py-4 sm:py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl active:scale-[0.98]"
                                 >
                                     Confirm & Send to Kitchen <ArrowRight size={24} />
                                 </button>
